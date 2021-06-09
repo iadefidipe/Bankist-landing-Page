@@ -9,6 +9,9 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
+// const tabs = document.querySelectorAll('.operations__tab');
+// const tabsContainer = document.querySelectorAll('.operations__tab-container');
+// const tabsContent = document.querySelectorAll('.operations__content');
 
 // TODO: Modal window
 const openModal = function (e) {
@@ -39,7 +42,7 @@ document.addEventListener('keydown', function (e) {
 
 
 btnScrollTo.addEventListener('click', e => {
-  const s1coords = section1.getBoundingClientRect(); //this gives the coordinate of the element on the page
+  // const s1coords = section1.getBoundingClientRect(); //this gives the coordinate of the element on the page
   // console.log('Current scroll (X/y=Y)', window.pageXOffset,pageYOffset);
   // console.log('height /width viewport', document.documentElement.clientHeight, document.documentElement.clientWidth);
 
@@ -58,6 +61,7 @@ btnScrollTo.addEventListener('click', e => {
   // })
 
   // the first two implementations are old way of doing this smooth scrolling, the mordern way
+  console.log('smooth');
 
   section1.scrollIntoView({behaviour:'smooth'});
 
@@ -93,19 +97,50 @@ document.querySelector('.nav__links').addEventListener('click', function(e){
   }
 })
 
+// TODO: Building tab component
 
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
+//* one inefficient way of doing this is addin the eventListener to each tab using the forEach method, but this will slow the page performance if we had many tabs. so we have to use event delegetion
+
+tabsContainer.addEventListener('click', function (e) {
+  const clicked = e.target.closest('.operations__tab');
+  // console.log(clicked);
+  // if (e.target.classList.contains('operations__tab')) {
+  //   console.log(e.target);
+  // }
+
+  // Guard clause
+  if (!clicked) return;
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+  tabsContent.forEach (c => c.classList.remove('operations__content--active'));
+  clicked.classList.toggle('operations__tab--active');
+  
+
+  // * activating the content area
+  // tabsContent.classList.toggle('operations__content--active');
+  console.log(clicked.dataset.tab);
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+
+// forEach method
+// tabs.forEach(t => t.addEventListener('click', (e) => console.log('Tab')));
 
 
 
 // * NOTES
 
 // TODO: creating element in DOM 
-const message = document.createElement('div');
-message.classList.add('cookie-message'); //Adding a class to the newly created div
-// message.textContent= ' We use cookies for improved performance';
-message.innerHTML= 'We use cookies for improved performance. <button class= "btn btn--close-cookie"> Got it! </button>'
+// const message = document.createElement('div');
+// message.classList.add('cookie-message'); //Adding a class to the newly created div
+// // message.textContent= ' We use cookies for improved performance';
+// message.innerHTML= 'We use cookies for improved performance. <button class= "btn btn--close-cookie"> Got it! </button>'
 
-header.prepend(message); //prepend: adds the newly created message elements as the first child element of the header
+// header.prepend(message); //prepend: adds the newly created message elements as the first child element of the header
 // header.append(message); //append: adds the newly created message elements as the last child element of the header
 
 // header.append(message.cloneNode(true)) // adding true to the this method ensures all the child elements are copied
@@ -116,52 +151,52 @@ header.prepend(message); //prepend: adds the newly created message elements as t
 // header.after(message.cloneNode(true)); // after: adds the newly created message elements as a sibling element after the header 
 
 // TODO: Deleting elements
-document.querySelector('.btn--close-cookie').addEventListener('click', function(){
-  // message.remove(); //this is a newly added method, they had to traverse the DOM to do this before. As shown below
-  message.parentElement.removeChild(message); //this is the older way of removing elements through DOM traversing
-});
+// document.querySelector('.btn--close-cookie').addEventListener('click', function(){
+//   // message.remove(); //this is a newly added method, they had to traverse the DOM to do this before. As shown below
+//   message.parentElement.removeChild(message); //this is the older way of removing elements through DOM traversing
+// });
 
 // TODO: working with styles
-message.style.backgroundColor ='#37383d'; //these are added as inline styles
-message.style.width = '120%'
+// message.style.backgroundColor ='#37383d'; //these are added as inline styles
+// message.style.width = '120%'
 
-// if we want to read the sytles of an element, it can be do
-console.log(message.style.color); //this wont work because its not availble inline
-console.log(message.style.backgroundColor);
+// // if we want to read the sytles of an element, it can be do
+// console.log(message.style.color); //this wont work because its not availble inline
+// console.log(message.style.backgroundColor);
 
-console.log(getComputedStyle(message).color);
+// console.log(getComputedStyle(message).color);
 
-message.style.height = Number.parseFloat(getComputedStyle(message).height) + 40 + 'px';
+// message.style.height = Number.parseFloat(getComputedStyle(message).height) + 40 + 'px';
 
 // TODO: working with CSS variables
-document.documentElement.style.setProperty('--color-primary', 'orangered');
+// document.documentElement.style.setProperty('--color-primary', 'orangered');
 
 // TODO; Working with Atrributes
-const logo = document.querySelector('.nav__logo');
-console.log(logo.src);
-console.log(logo.alt);
- logo.alt = 'Beatiful minimalist logo'
-//the above will only read standard attributes, if set a non standard attribute you can use the getAtrribute method to read it
-console.log(logo.designer); // this wont work because designer is not a standard attributes
-console.log(logo.getAttribute('designer'));
+// const logo = document.querySelector('.nav__logo');
+// console.log(logo.src);
+// console.log(logo.alt);
+//  logo.alt = 'Beatiful minimalist logo'
+// //the above will only read standard attributes, if set a non standard attribute you can use the getAtrribute method to read it
+// console.log(logo.designer); // this wont work because designer is not a standard attributes
+// console.log(logo.getAttribute('designer'));
 
-logo.setAttribute('company', 'Bankist'); //to set attributes
+// logo.setAttribute('company', 'Bankist'); //to set attributes
 
 // TODO: Data Attributes
-console.log(logo.dataset.versionNumber);
+// console.log(logo.dataset.versionNumber);
 
 
 
 
 // TODO: EVENTS (An event is a signal that is generated by a certain DOM node, a signal means that somthing has happened)
- const h1 = document.querySelector('h1');
- const alertH1 = e => {
-   alert('Great! This is the heading');
+//  const h1 = document.querySelector('h1');
+//  const alertH1 = e => {
+//    alert('Great! This is the heading');
 
-   h1.removeEventListener('mouseenter', alertH1); //you can also rempve event listeners
- };
+//    h1.removeEventListener('mouseenter', alertH1); //you can also rempve event listeners
+//  };
 
-h1.addEventListener('mouseenter', alertH1)
+// h1.addEventListener('mouseenter', alertH1)
 
 // setTimeout(() => h1.removeEventListener('mouseenter', alertH1), 3000); // you can set a timer to remove vents using this code
 
@@ -178,12 +213,12 @@ h1.addEventListener('mouseenter', alertH1)
 
 //* generating random color
 
-const randomInt = (min,max) => 
-  Math.floor( Math.random() * (max - min + 1) + min);
-//* function to generate random number
+// const randomInt = (min,max) => 
+//   Math.floor( Math.random() * (max - min + 1) + min);
+// //* function to generate random number
 
-const randomColor = () => 
-  ` rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
+// const randomColor = () => 
+//   ` rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
 //* function to generate random colors
 
 // document.querySelector('.nav__link').addEventListener('click',  function(e) {
@@ -213,32 +248,36 @@ const randomColor = () =>
 
 //  TODO: DOM Traversing
 
-// * going downwards
-console.log(h1.querySelectorAll('.highlight'));
-  console.log(h1.childNodes); //nodes can be anything, so we might not use this
-  console.log(h1.children); //this wotks for only direct children
-  h1.firstElementChild.style.color = 'red'
+// const h1 = document.querySelector('h1');
 
-  // * Going upwards
-  console.log(h1.parentNode);
-  console.log(h1.parentElement);
+// // * going downwards
+// console.log(h1.querySelectorAll('.highlight'));
+//   console.log(h1.childNodes); //nodes can be anything, so we might not use this
+//   console.log(h1.children); //this wotks for only direct children
+//   h1.firstElementChild.style.color = 'red'
 
-  h1.closest('.header').style.background = 'var (--gradient-secondary)';
+//   // * Going upwards
+//   console.log(h1.parentNode);
+//   console.log(h1.parentElement);
 
-  console.log(h1.closest('.header').style.background);
+//   console.log(h1.closest('.header'));
 
-  h1.closest('h1').style.background = 'var (--gradient-secondary)';
-  console.log(h1.closest('h1').style.background);
+//   h1.closest('.header').style.background = 'var (--gradient-secondary)';
 
-  //* Going sideways
-  console.log(h1.previousElementSibling);
-  console.log(h1.nextElementSibling);
+//   console.log(h1.closest('.header').style.background);
 
-  // node
-  console.log(h1.previousSibling);
-  console.log(h1.nextSibling);
+//   h1.closest('h1').style.background = 'var (--gradient-secondary)';
+//   console.log(h1.closest('h1').style.background);
 
-  
+//   //* Going sideways
+//   console.log(h1.previousElementSibling);
+//   console.log(h1.nextElementSibling);
+
+//   // node
+//   console.log(h1.previousSibling);
+//   console.log(h1.nextSibling);
+
+
 
 
 
