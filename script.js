@@ -9,9 +9,9 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
-// const tabs = document.querySelectorAll('.operations__tab');
-// const tabsContainer = document.querySelectorAll('.operations__tab-container');
-// const tabsContent = document.querySelectorAll('.operations__content');
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
 
 // TODO: Modal window
 const openModal = function (e) {
@@ -99,11 +99,14 @@ document.querySelector('.nav__links').addEventListener('click', function(e){
 
 // TODO: Building tab component
 
-const tabs = document.querySelectorAll('.operations__tab');
-const tabsContainer = document.querySelector('.operations__tab-container');
-const tabsContent = document.querySelectorAll('.operations__content');
+// const tabs = document.querySelectorAll('.operations__tab');
+// const tabsContainer = document.querySelector('.operations__tab-container');
+// const tabsContent = document.querySelectorAll('.operations__content');
 
 //* one inefficient way of doing this is addin the eventListener to each tab using the forEach method, but this will slow the page performance if we had many tabs. so we have to use event delegetion
+
+// forEach method
+// tabs.forEach(t => t.addEventListener('click', (e) => console.log('Tab')));
 
 tabsContainer.addEventListener('click', function (e) {
   const clicked = e.target.closest('.operations__tab');
@@ -121,14 +124,92 @@ tabsContainer.addEventListener('click', function (e) {
 
   // * activating the content area
   // tabsContent.classList.toggle('operations__content--active');
-  console.log(clicked.dataset.tab);
+
   document
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     .classList.add('operations__content--active');
 });
 
-// forEach method
-// tabs.forEach(t => t.addEventListener('click', (e) => console.log('Tab')));
+
+// TODO: Passinng arguments into event handlers
+
+// * Menu fade animation
+
+ const handleHover = function (e, opacity){
+   if (e.target.classList.contains('nav__link')){
+    const link = e.target;
+    const siblings = link.closest('.nav__links').querySelectorAll('.nav__link');
+    const logo = link.closest('.nav').querySelector('img');
+    
+    siblings.forEach( el => {
+      if (el !== link) el.style.opacity = opacity;
+    })
+
+    logo.style.opacity = opacity;
+ }
+}
+const nav  = document.querySelector('.nav');
+
+nav.addEventListener('mouseover',function(e){
+  handleHover (e, 0.5);
+
+}) //mouseover is simillar to mouseenter, the difference is that mouseenter does not bubble 
+
+nav.addEventListener('mouseout', function(e){
+  handleHover(e, 1);
+})
+
+
+// TODO: implementing a stick navigation
+
+//* using the scroll event
+// const initialCoords = section1.getBoundingClientRect(); //helps us get the postion of the first section
+
+// window.addEventListener('scroll', function(){ //Using the scroll event is very bad for page perfomance, because it fires all the time no matter how small the change is
+//   if (this.window.scrollY >initialCoords.top) 
+//   nav.classList.add('sticky');
+//   else nav.classList.remove('sticky');
+// })
+
+// * Using Intersection observer API
+
+// the first thing to do is create a new intersection observer
+
+// const obsCallBack = function(entries, observer) {};
+// const obsOption = {
+//   root: null, // root is the element we want our target element to intersect
+//   threshold: 0.1,   //threshold is % of intersection at which the observer callback will be called
+// };
+// const observer = new IntersectionObserver(obsCallBack, obsOption);
+// observer.observe(section1); //section1 is the target element
+const navHeight = nav.getBoundingClientRect().height;
+const stickyNav = function (entries){
+  const [entry] = entries; //destructuring entries
+  console.log(entry);
+  if(!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+}
+const headerObserver = new IntersectionObserver(stickyNav, {root:null, threshold: 0, rootMargin: `${navHeight}px`});
+headerObserver.observe(header);
+
+// TODO: Revealing elements on scroll
+const allSections = document.querySelectorAll('.section');
+
+const revealSection = function(entries, observer){
+  const [entry] = entries;
+
+  if(!entry.isIntersecting) return;
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target)
+}
+
+ const sectionObserver = new IntersectionObserver(revealSection, {root:null, threshold: 0.15});
+
+  allSections.forEach( function(section) {
+   sectionObserver.observe(section);
+   section.classList.add('section--hidden');
+  })
+
 
 
 
@@ -276,10 +357,5 @@ tabsContainer.addEventListener('click', function (e) {
 //   // node
 //   console.log(h1.previousSibling);
 //   console.log(h1.nextSibling);
-
-
-
-
-
 
 
