@@ -185,7 +185,7 @@ nav.addEventListener('mouseout', function(e){
 const navHeight = nav.getBoundingClientRect().height;
 const stickyNav = function (entries){
   const [entry] = entries; //destructuring entries
-  console.log(entry);
+  
   if(!entry.isIntersecting) nav.classList.add('sticky');
   else nav.classList.remove('sticky');
 }
@@ -207,8 +207,115 @@ const revealSection = function(entries, observer){
 
   allSections.forEach( function(section) {
    sectionObserver.observe(section);
-   section.classList.add('section--hidden');
+  //  section.classList.add('section--hidden');
   })
+
+  //  TODO: Lazy loading images
+  const imgTargets = document.querySelectorAll('img[data-src]');
+
+  const loadImg = function(entries, observer){
+    const [entry] = entries;
+
+    if(!entry.isIntersecting) return;
+
+    //* replace the src with the data-src
+    entry.target.src = entry.target.dataset.src;
+
+    entry.target.addEventListener('load', function(e){
+      entry.target.classList.remove('lazy-img')
+    })
+
+    observer.unobserve(entry.target)
+
+  }
+
+  const imgObserver = new IntersectionObserver(loadImg, {root:null,  threshold:0});
+
+  imgTargets.forEach(function(image){
+    imgObserver.observe(image);
+  })
+
+  //  TODO: Slider
+   const slider = document.querySelector('.slider');
+   const slides= document.querySelectorAll('.slide');
+   const btnLeft = document.querySelector('.slider__btn--left');
+   const btnRight = document.querySelector('.slider__btn--right');
+   const dotContainer = document.querySelector('.dots')
+
+   let curSlide = 0; 
+   const maxSlide = slides.length
+
+  //  slider.style.transform = `scale(0.5)`;
+  //  slider.style.overflow = `visible`;
+   
+   const createDot = function(){
+     slides.forEach( function(_, i){
+       dotContainer.insertAdjacentHTML('beforeend', `<button class ="dots__dot" data-slide="${i}"></button>`)
+     } )
+   }
+
+   createDot();
+
+   const activateDot = function (slide){
+     document.querySelectorAll('.dots__dot').forEach(dot => dot.classList.remove('dots__dot--active'));
+
+     document.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add('dots__dot--active');
+   }
+
+   const goToSlide = function (slide){
+     slides.forEach(
+       (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+     );
+   }
+
+   const nextSlide = function (){
+     
+     if(curSlide === maxSlide-1){ //conditional statement to ensure once man no. of slides is reach curSlide return back to the begin
+       curSlide = 0;
+     }else{
+       curSlide++;
+     }
+
+     goToSlide(curSlide); 
+     activateDot();
+
+   }
+
+   const prevSlide = function(){
+     if( curSlide === 0){
+       curSlide = maxSlide-1
+     }else{
+       curSlide--;
+     }
+     
+
+     goToSlide(curSlide);
+     activateDot();
+   }
+
+   goToSlide(0);
+
+   btnRight.addEventListener('click', nextSlide);
+   btnLeft.addEventListener('click', prevSlide);
+
+   document.addEventListener('keydown', function(e){
+
+    if(e.key === 'ArrowLeft') prevSlide();
+    e.key === 'ArrowRight' && nextSlide();
+   })
+
+   dotContainer.addEventListener('click', function(e){
+     if(e.target.classList.contains('dots__dot')){
+       const {slide} = e.target.dataset;
+       goToSlide(slide);
+       activateDot();
+     }
+   }
+   )
+
+
+   
+
 
 
 
